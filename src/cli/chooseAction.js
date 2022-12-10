@@ -3,9 +3,13 @@ import { changeDirectory } from "../navigation/navigate.js";
 import { list } from "../navigation/navigate.js";
 import { wrongCommandLog } from "../messageLogger/errorLogger.js";
 import { farewell } from "../messageLogger/politeLogger.js";
+import { cat, add, rename, copy, move, rm } from "../fs/operateFiles.js";
+import { handleOScommands } from "../os/os.js";
+import { calculateHash } from "../crypto/calculateHash.js";
+import { compress, decompress } from "../zip/handleZlibOperations.js";
 
 export const chooseAction = async (command, username = "Lone Wanderer") => {
-  const [cmd, args] = command
+  const [cmd, ...args] = command
     .trim()
     .split(" ")
     .map((item) => item.trim());
@@ -14,12 +18,42 @@ export const chooseAction = async (command, username = "Lone Wanderer") => {
       goUp();
       break;
     case "cd":
-      changeDirectory(args);
+      changeDirectory(...args);
       break;
     case "ls":
       await list();
       break;
-    case "exit":
+    case "cat":
+      await cat(...args);
+      break;
+    case "add":
+      await add(...args);
+      break;
+    case "rn":
+      await rename(...args);
+      break;
+    case "cp":
+      await copy(...args);
+      break;
+    case "mv":
+      await move(...args);
+      break;
+    case "rm":
+      await rm(...args);
+      break;
+    case "os":
+      handleOScommands(...args);
+      break;
+    case "hash":
+      await calculateHash(...args);
+      break;
+    case "compress":
+      await compress(...args);
+      break;
+    case "decompress":
+      await decompress(...args);
+      break;
+    case ".exit":
       farewell(username);
       process.exit(0);
     default:

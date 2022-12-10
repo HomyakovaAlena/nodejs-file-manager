@@ -1,3 +1,3 @@
 export const directoryLog = (directory) => {
-  console.log(`You are currently in ${directory}`);
+  console.log(`\nYou are currently in ${directory}`);
 };

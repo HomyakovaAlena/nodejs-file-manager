@@ -15,10 +15,14 @@ export const prompt = async (username) => {
     rl.prompt();
 
     rl.on("line", async (line) => {
-      await chooseAction(line, username);
-      directoryLog(getCwd());
-      rl.prompt();
+      await chooseAction(line, username)
+        .catch((err) => console.log(err))
+        .finally(() => {
+          directoryLog(getCwd());
+          rl.prompt();
+        });
     });
+
     rl.on("close", () => {
       farewell(username);
       process.exit(0);
