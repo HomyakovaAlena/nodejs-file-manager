@@ -5,35 +5,18 @@ import * as fs from "node:fs/promises";
 import { promisify } from "node:util";
 import { executionErrorLog } from "../messageLogger/errorLogger.js";
 import { finished } from "stream";
+import { isFileExists } from "../utils/utils.isFileExists.js";
 const finishedAsync = promisify(finished);
-
-export const isFileExists = async (filePath) => {
-  try {
-    const resolvedPath = path.resolve(filePath);
-    await fs.access(resolvedPath);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
 
 export const cat = async (filePath) => {
   const resolvedPath = path.resolve(filePath);
   const readable = createReadStream(resolvedPath, "utf-8");
   const writable = process.stdout;
   try {
-    // let body = "";
-
-    // readable.on("data", (chunk) => {
-    //   body += chunk.toString();
-    // });
-    // readable.on("end", () => {
-    //   writable.write(body);
-    // });
     readable.pipe(writable);
     await finishedAsync(readable);
   } catch (err) {
-    console.log(err);
+    executionErrorLog();
   }
 };
 
@@ -43,8 +26,7 @@ export const add = async (fileName) => {
     const newPath = path.join(cwd, fileName);
     await fs.writeFile(newPath, "", { flag: "wx" });
   } catch (error) {
-    console.log(error);
-    throw new Error("FS operation failed");
+    executionErrorLog();
   }
 };
 
@@ -56,29 +38,40 @@ export const rename = async (filePath, newFileName) => {
 
     const isSameFileExists = await isFileExists(newPath);
     if (isSameFileExists) {
-      throw new Error("FS operation failed");
+      executionErrorLog();
+      return;
     }
 
     await fs.rename(resolvedPath, newPath);
   } catch (error) {
-    console.log(error);
-    throw new Error("FS operation failed");
+    executionErrorLog();
   }
 };
 
 export const copy = async (filePath, directoryPath) => {
-  const [resolvedFilePath, resolvedDirPath] = [
-    path.resolve(filePath),
-    path.resolve(directoryPath),
-  ];
-  const inputStream = createReadStream(resolvedFilePath);
-  const fileName = path.basename(resolvedFilePath);
-  const newPath = path.join(resolvedDirPath, fileName);
-  const outputStream = createWriteStream(newPath);
   try {
+    const [resolvedFilePath, resolvedDirPath] = [
+      path.resolve(filePath),
+      path.resolve(directoryPath),
+    ];
+
+    const fileName = path.basename(resolvedFilePath);
+    const newPath = path.join(resolvedDirPath, fileName);
+
+    const inputStream = createReadStream(resolvedFilePath).on("error", () => {
+      inputStream.close();
+    });
+
+    const outputStream = createWriteStream(newPath).on("error", () => {
+      outputStream.close();
+      inputStream.close();
+    });
+
     inputStream.pipe(outputStream);
+    await finishedAsync(inputStream, { cleanup: true });
+    await finishedAsync(outputStream, { cleanup: true });
   } catch (error) {
-    console.log(error);
+    executionErrorLog();
   }
 };
 
@@ -87,7 +80,7 @@ export const rm = async (filePath) => {
     const resolvedPath = path.resolve(filePath);
     await fs.unlink(resolvedPath);
   } catch (error) {
-    console.log(error);
+    executionErrorLog();
   }
 };
 
@@ -100,6 +93,6 @@ export const move = async (filePath, directoryPath) => {
     await copy(resolvedFilePath, resolvedDirPath);
     await rm(resolvedFilePath);
   } catch (error) {
-    console.log(error);
+    executionErrorLog();
   }
 };

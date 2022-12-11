@@ -2,59 +2,65 @@ import { goUp } from "../navigation/navigate.js";
 import { changeDirectory } from "../navigation/navigate.js";
 import { list } from "../navigation/navigate.js";
 import { wrongCommandLog } from "../messageLogger/errorLogger.js";
-import { farewell } from "../messageLogger/politeLogger.js";
+import { sayGoodbye } from "../messageLogger/politeLogger.js";
 import { cat, add, rename, copy, move, rm } from "../fs/operateFiles.js";
 import { handleOScommands } from "../os/os.js";
-import { calculateHash } from "../crypto/calculateHash.js";
-import { compress, decompress } from "../zip/handleZlibOperations.js";
+import { hash } from "../crypto/hash.js";
+import { compress, decompress } from "../zip/zip.js";
+import { helpLog } from "../messageLogger/helpLogger.js";
+import { parseCommand } from "./utils.controller.js";
 
-export const chooseAction = async (command, username = "Lone Wanderer") => {
-  const [cmd, ...args] = command
-    .trim()
-    .split(" ")
-    .map((item) => item.trim());
+const [HELP, UP, CD, LS, CAT, ADD] = ["help", "up", "cd", "ls", "cat", "add"];
+const [RN, CP, MV, RM, OS, HASH] = ["rn", "cp", "mv", "rm", "os", "hash"];
+const [COMPRESS, DECOMPRESS, EXIT] = ["compress", "decompress", ".exit"];
+
+export const chooseAction = async (command, username) => {
+  const [cmd, args] = parseCommand(command);
   switch (cmd) {
-    case "up":
+    case UP:
       goUp();
       break;
-    case "cd":
+    case CD:
       changeDirectory(...args);
       break;
-    case "ls":
+    case LS:
       await list();
       break;
-    case "cat":
+    case CAT:
       await cat(...args);
       break;
-    case "add":
+    case ADD:
       await add(...args);
       break;
-    case "rn":
+    case RN:
       await rename(...args);
       break;
-    case "cp":
+    case CP:
       await copy(...args);
       break;
-    case "mv":
+    case MV:
       await move(...args);
       break;
-    case "rm":
+    case RM:
       await rm(...args);
       break;
-    case "os":
+    case OS:
       handleOScommands(...args);
       break;
-    case "hash":
-      await calculateHash(...args);
+    case HASH:
+      await hash(...args);
       break;
-    case "compress":
+    case COMPRESS:
       await compress(...args);
       break;
-    case "decompress":
+    case DECOMPRESS:
       await decompress(...args);
       break;
-    case ".exit":
-      farewell(username);
+    case HELP:
+      helpLog();
+      break;
+    case EXIT:
+      sayGoodbye(username);
       process.exit(0);
     default:
       wrongCommandLog();

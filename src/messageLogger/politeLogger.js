@@ -1,9 +1,11 @@
+const WELCOME = "Welcome to the File Manager,";
+const THANKS = "\nThank you for using File Manager,";
+const BYE = "goodbye!";
+
 export const greet = (username) => {
-  console.log(`Welcome to the File Manager, ${username}!`);
-  //TODO: errors + ways to give arguments + don't finish the program after greeting + writestream or stdout;
+  console.log(`${WELCOME} ${username}!`);
 };
 
-export const farewell = (username) => {
-  console.log(`Thank you for using File Manager, ${username}, goodbye!`);
-  //TODO: writestream or stdout
+export const sayGoodbye = (username) => {
+  console.log(`${THANKS} ${username}, ${BYE}`);
 };

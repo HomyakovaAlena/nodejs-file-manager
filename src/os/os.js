@@ -1,16 +1,25 @@
 import os from "node:os";
 import { wrongCommandLog } from "../messageLogger/errorLogger.js";
 
+const [EOL, CPUS, HOME_DIR, USERNAME, ARCHITECTURE] = [
+  "--EOL",
+  "--cpus",
+  "--homedir",
+  "--username",
+  "--architecture",
+];
+const CPU_MESSAGE = "Overall amount of CPUs:";
+
 const getEOL = () => {
   console.log(JSON.stringify(os.EOL));
 };
 
 const getCPUs = () => {
   const cpus = os.cpus();
-  console.log(`Overall amount of CPUs: ${cpus.length}.`);
+  console.log(`${CPU_MESSAGE} ${cpus.length}.`);
   cpus.forEach((cpu, index) =>
     console.log(
-      `${index + 1}) model: ${cpu.model}, speed: ${cpu.speed / 1000}GHz`
+      `${index + 1}) model: ${cpu.model}, clock rate: ${cpu.speed / 1000}GHz`
     )
   );
 };
@@ -32,19 +41,19 @@ const getCPUArchitecture = () => {
 
 export const handleOScommands = (args) => {
   switch (args) {
-    case "--EOL":
+    case EOL:
       getEOL();
       break;
-    case "--cpus":
+    case CPUS:
       getCPUs();
       break;
-    case "--homedir":
+    case HOME_DIR:
       getHomeDir();
       break;
-    case "--username":
+    case USERNAME:
       getUsername();
       break;
-    case "--architecture":
+    case ARCHITECTURE:
       getCPUArchitecture();
       break;
     default:

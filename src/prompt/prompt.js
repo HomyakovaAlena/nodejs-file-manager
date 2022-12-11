@@ -1,15 +1,18 @@
 import * as readline from "node:readline/promises";
-import { chooseAction } from "../cli/chooseAction.js";
-import { farewell } from "../messageLogger/politeLogger.js";
+import { chooseAction } from "../controller/chooseAction.js";
+import { sayGoodbye } from "../messageLogger/politeLogger.js";
 import { getCwd } from "../navigation/navigate.js";
 import { directoryLog } from "../messageLogger/directoryLogger.js";
+import { executionErrorLog } from "../messageLogger/errorLogger.js";
+
+const PROMPT = `\nWaiting for your instructions, Commander!..> `;
 
 export const prompt = async (username) => {
   try {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
-      prompt: `\nWaiting for your instructions, Сommander!..> `,
+      prompt: PROMPT,
     });
     directoryLog(getCwd());
     rl.prompt();
@@ -24,10 +27,10 @@ export const prompt = async (username) => {
     });
 
     rl.on("close", () => {
-      farewell(username);
+      sayGoodbye(username);
       process.exit(0);
     });
   } catch (err) {
-    console.error(err);
+    executionErrorLog();
   }
 };
