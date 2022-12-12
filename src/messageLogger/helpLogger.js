@@ -27,6 +27,8 @@ hash path_to_file                       - calculate hash for file
 (4) Compress and decompress operations:
 compress path_to_file path_to_destination    - compress file (using Brotli algorithm)
 decompress path_to_file path_to_destination  - decompress file (using Brotli algorithm)
+
+If path includes spaces, use single or double quotes, please.
 `;
 
 export const helpLog = () => {

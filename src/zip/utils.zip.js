@@ -2,6 +2,7 @@ import { promisify } from "node:util";
 import { finished } from "stream";
 const finishedAsync = promisify(finished);
 
+export const [COMPRESS, DECOMPRESS] = ["compress", "decompress"];
 const COMPRESS_SUCCESS_MESSAGE = `Compress done, check here:`;
 const DECOMPRESS_SUCCESS_MESSAGE = `Decompress done, check here:`;
 
@@ -20,7 +21,7 @@ export const handleZlibErrors = (
   if (err) {
     streamsArray.forEach((stream) => stream.close());
   } else {
-    operation === "compress"
+    operation === COMPRESS
       ? console.log(`${COMPRESS_SUCCESS_MESSAGE} ${resolvedDestinationPath}`)
       : console.log(`${DECOMPRESS_SUCCESS_MESSAGE} ${resolvedDestinationPath}`);
   }

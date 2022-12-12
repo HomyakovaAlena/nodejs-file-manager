@@ -33,7 +33,7 @@ export const add = async (fileName) => {
 export const rename = async (filePath, newFileName) => {
   try {
     const resolvedPath = path.resolve(filePath);
-    const directoryPath = path.join(resolvedPath, "../");
+    const directoryPath = path.basename(path.dirname(resolvedPath));
     const newPath = path.join(directoryPath, newFileName);
 
     const isSameFileExists = await isFileExists(newPath);
@@ -50,18 +50,21 @@ export const rename = async (filePath, newFileName) => {
 
 export const copy = async (filePath, directoryPath) => {
   try {
+    const isSameFileExists = await isFileExists(filePath);
+    if (!isSameFileExists) {
+      executionErrorLog();
+      return;
+    }
     const [resolvedFilePath, resolvedDirPath] = [
       path.resolve(filePath),
       path.resolve(directoryPath),
     ];
-
     const fileName = path.basename(resolvedFilePath);
     const newPath = path.join(resolvedDirPath, fileName);
 
     const inputStream = createReadStream(resolvedFilePath).on("error", () => {
       inputStream.close();
     });
-
     const outputStream = createWriteStream(newPath).on("error", () => {
       outputStream.close();
       inputStream.close();
@@ -90,9 +93,15 @@ export const move = async (filePath, directoryPath) => {
       path.resolve(filePath),
       path.resolve(directoryPath),
     ];
+    const fileName = path.basename(resolvedFilePath);
+    const newPath = path.join(resolvedDirPath, fileName);
+
     await copy(resolvedFilePath, resolvedDirPath);
-    await rm(resolvedFilePath);
-  } catch (error) {
-    executionErrorLog();
+    const isSameFileExists = await isFileExists(newPath);
+    if (isSameFileExists) {
+      await rm(resolvedFilePath);
+    }
+  } catch {
+    return;
   }
 };

@@ -10,10 +10,3 @@ export const isFileExists = async (filePath) => {
     return false;
   }
 };
-
-export const returnIfNotExists = async (filePath) => {
-  if (!(await isFileExists(filePath))) {
-    executionErrorLog();
-    return;
-  }
-};

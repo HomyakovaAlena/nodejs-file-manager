@@ -4,14 +4,12 @@ import { pipeline } from "node:stream";
 import { createReadStream, createWriteStream } from "node:fs";
 import * as path from "path";
 import { executionErrorLog } from "../messageLogger/errorLogger.js";
-import { returnIfNotExists } from "../utils/utils.isFileExists.js";
 import { cleanUp } from "./utils.zip.js";
 import { handleZlibErrors } from "./utils.zip.js";
-const [COMPRESS, DECOMPRESS] = ["compress", "decompress"];
+import { COMPRESS, DECOMPRESS } from "./utils.zip.js";
 
 export const compress = async (filePath, destinationPath) => {
   try {
-    await returnIfNotExists(filePath);
     const [resolvedFilePath, resolvedDestinationPath] = [
       path.resolve(filePath),
       path.resolve(destinationPath),
@@ -22,17 +20,12 @@ export const compress = async (filePath, destinationPath) => {
     const destination = createWriteStream(resolvedDestinationPath, {
       flags: "wx",
     });
-
-    pipeline(source, compress, destination, (err) => {
-      handleZlibErrors(
-        [source, compress, destination],
-        err,
-        COMPRESS,
-        resolvedDestinationPath
-      );
+    const streamsArray = [source, compress, destination];
+    pipeline(...streamsArray, (err) => {
+      handleZlibErrors(streamsArray, err, COMPRESS, resolvedDestinationPath);
     });
 
-    await cleanUp([source, compress, destination]);
+    await cleanUp(streamsArray);
   } catch (err) {
     executionErrorLog();
   }
@@ -40,7 +33,6 @@ export const compress = async (filePath, destinationPath) => {
 
 export const decompress = async (filePath, destinationPath) => {
   try {
-    await returnIfNotExists(filePath);
     const [resolvedFilePath, resolvedDestinationPath] = [
       path.resolve(filePath),
       path.resolve(destinationPath),
@@ -52,16 +44,12 @@ export const decompress = async (filePath, destinationPath) => {
       flags: "wx",
     });
 
-    pipeline(source, decompress, destination, (err) => {
-      handleZlibErrors(
-        [source, decompress, destination],
-        err,
-        DECOMPRESS,
-        resolvedDestinationPath
-      );
+    const streamsArray = [source, decompress, destination];
+    pipeline(...streamsArray, (err) => {
+      handleZlibErrors(streamsArray, err, DECOMPRESS, resolvedDestinationPath);
     });
 
-    await cleanUp([source, decompress, destination]);
+    await cleanUp(streamsArray);
   } catch (err) {
     executionErrorLog();
   }
