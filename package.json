@@ -1,0 +1,25 @@
+{
+  "name": "nodejs-file-manager",
+  "version": "1.0.0",
+  "description": "This repository is the solution to nodejs-assignments https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/file-manager/assignment.md",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/start/start.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HomyakovaAlena/nodejs-file-manager.git"
+  },
+  "keywords": [
+    "nodejs",
+    "assignments",
+    "file-manager"
+  ],
+  "author": "HomyakovaAlena",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HomyakovaAlena/nodejs-file-manager/issues"
+  },
+  "homepage": "https://github.com/HomyakovaAlena/nodejs-file-manager#readme"
+}
